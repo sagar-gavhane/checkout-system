@@ -5,6 +5,8 @@ import { DefaultPricingStrategy } from "./DefaultPricingStrategy";
 import { PricingStrategy } from "./PricingStrategy";
 
 export class Buy3Get1AppleTVPricingStrategy implements PricingStrategy {
+  private readonly FREE_UNIT_THRESHOLD = 4;
+
   calculatePrice(orderItems: OrderItem[] = []): number {
     console.log("Calculating price using Buy3Get1AppleTVPricingStrategy");
 
@@ -27,7 +29,9 @@ export class Buy3Get1AppleTVPricingStrategy implements PricingStrategy {
     }
 
     const totalUnitsPurchased = this.getTotalUnitsPurchased(appleTVItems);
-    const freeUnits = Math.floor(totalUnitsPurchased / 4);
+    const freeUnits = Math.floor(
+      totalUnitsPurchased / this.FREE_UNIT_THRESHOLD
+    );
     const chargeableUnits = totalUnitsPurchased - freeUnits;
     const appleTVUnitPrice = appleTVItems[0].product.price;
 

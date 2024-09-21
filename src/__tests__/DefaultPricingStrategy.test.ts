@@ -13,25 +13,21 @@ describe("DefaultPricingStrategy", () => {
   });
 
   test("should calculate price correctly for a single item", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("mbp"), quantity: 1 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("mbp"), 1)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(productMap.get("mbp").price); // Price should match the product price
   });
 
   test("should calculate price correctly for multiple identical items", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("mbp"), quantity: 3 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("mbp"), 3)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(productMap.get("mbp").price * 3); // Total price should be price * quantity
   });
 
   test("should calculate price correctly for multiple different items", () => {
     const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 2 },
-      { product: productMap.get("mbp"), quantity: 2 },
+      new OrderItem(productMap.get("ipd"), 2),
+      new OrderItem(productMap.get("mbp"), 2),
     ];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(3899.96); // Total price should be sum of all products
@@ -50,13 +46,11 @@ describe("DefaultPricingStrategy", () => {
       ];
 
       pricingStrategy.calculatePrice(orderItems);
-    }).toThrow("You have passed an invalid quantity."); // Negative quantities should not contribute to price
+    }).toThrow("Quantity must be a non-negative number."); // Negative quantities should not contribute to price
   });
 
   test("should handle edge case of zero quantity", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 0 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("atv"), 0)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(0); // Zero quantity should not contribute to price
   });
@@ -71,9 +65,9 @@ describe("DefaultPricingStrategy", () => {
 
   test("should handle multiple products with varying quantities and prices", () => {
     const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 2 },
-      { product: productMap.get("mbp"), quantity: 4 },
-      { product: productMap.get("atv"), quantity: 2 },
+      new OrderItem(productMap.get("ipd"), 2),
+      new OrderItem(productMap.get("mbp"), 4),
+      new OrderItem(productMap.get("atv"), 2),
     ];
 
     const totalPrice = pricingStrategy.calculatePrice(orderItems);

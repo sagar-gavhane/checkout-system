@@ -16,25 +16,21 @@ describe("IPadBulkBuy4PlusPricingStrategy", () => {
   });
 
   test("should calculate price correctly for 4 iPads", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 4 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("ipd"), 4)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(1999.96); // 499.99 * 4
   });
 
   test("should calculate price correctly for 5 iPads", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 5 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("ipd"), 5)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(2499.95); // 499.99 * 5
   });
 
   test("should calculate price correctly with mbp products", () => {
     const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 3 },
-      { product: productMap.get("mbp"), quantity: 2 },
+      new OrderItem(productMap.get("ipd"), 3),
+      new OrderItem(productMap.get("mbp"), 2),
     ];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(1499.97 + 2799.98);
@@ -47,9 +43,7 @@ describe("IPadBulkBuy4PlusPricingStrategy", () => {
   });
 
   test("should handle non-iPad products only", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("mbp"), quantity: 1 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("mbp"), 1)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(
       new DefaultPricingStrategy().calculatePrice(orderItems)
@@ -58,9 +52,9 @@ describe("IPadBulkBuy4PlusPricingStrategy", () => {
 
   test("should handle multiple SKUs with varying quantities", () => {
     const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 6 },
-      { product: productMap.get("mbp"), quantity: 1 },
-      { product: productMap.get("atv"), quantity: 2 },
+      new OrderItem(productMap.get("ipd"), 6),
+      new OrderItem(productMap.get("mbp"), 1),
+      new OrderItem(productMap.get("atv"), 2),
     ];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(4618.93);
@@ -68,17 +62,15 @@ describe("IPadBulkBuy4PlusPricingStrategy", () => {
 
   test("should return correct price with mixed quantities of iPads and other products", () => {
     const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 2 },
-      { product: productMap.get("mbp"), quantity: 5 },
+      new OrderItem(productMap.get("ipd"), 2),
+      new OrderItem(productMap.get("mbp"), 5),
     ];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(7999.93);
   });
 
   test("should handle large quantities of iPads", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 100 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("ipd"), 100)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(49999); // Expecting bulk price calculation
   });
@@ -90,21 +82,25 @@ describe("IPadBulkBuy4PlusPricingStrategy", () => {
       ]);
 
       pricingStrategy.calculatePrice(order.orderItems);
-    }).toThrow("You have passed an invalid quantity.");
+    }).toThrow("Quantity must be a non-negative number.");
   });
 
   test("should handle edge case of large mixed orders", () => {
     const orderItems: OrderItem[] = [];
 
     for (let i = 0; i < 50; i++) {
-      orderItems.push({
-        product: productMap.get("ipd"),
-        quantity: Math.floor(Math.random() * (10 - 1 + 1)) + 1,
-      });
-      orderItems.push({
-        product: productMap.get("mbp"),
-        quantity: Math.floor(Math.random() * (10 - 1 + 1)) + 1,
-      });
+      orderItems.push(
+        new OrderItem(
+          productMap.get("ipd"),
+          Math.floor(Math.random() * (10 - 1 + 1)) + 1
+        )
+      );
+      orderItems.push(
+        new OrderItem(
+          productMap.get("mbp"),
+          Math.floor(Math.random() * (10 - 1 + 1)) + 1
+        )
+      );
     }
 
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
@@ -112,26 +108,22 @@ describe("IPadBulkBuy4PlusPricingStrategy", () => {
   });
 
   test("should calculate price correctly when all items are iPads", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 10 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("ipd"), 10)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(4999.9); // Expecting bulk price calculation
   });
 
   test("should handle multiple identical items", () => {
     const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 8 },
-      { product: productMap.get("ipd"), quantity: 2 },
+      new OrderItem(productMap.get("ipd"), 8),
+      new OrderItem(productMap.get("ipd"), 2),
     ];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(4999.9); // Expecting bulk price calculation
   });
 
   test("should return correct price when no iPads but other products exist", () => {
-    const orderItems: OrderItem[] = [
-      { product: productMap.get("ipd"), quantity: 2 },
-    ];
+    const orderItems: OrderItem[] = [new OrderItem(productMap.get("ipd"), 2)];
     const totalPrice = pricingStrategy.calculatePrice(orderItems);
     expect(totalPrice).toBe(999.98); // Only default pricing applies
   });

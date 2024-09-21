@@ -58,7 +58,7 @@ describe("CombinePricingStrategy", () => {
       ];
 
       pricingStrategy.calculatePrice(orderItems);
-    }).toThrow("You have passed an invalid quantity."); // Negative quantities should not contribute to price
+    }).toThrow("Quantity must be a non-negative number."); // Negative quantities should not contribute to price
   });
 
   test("should handle zero quantities correctly", () => {

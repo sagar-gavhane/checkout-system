@@ -61,7 +61,7 @@ describe("CheckoutServiceImpl", () => {
   test("should handle negative quantities gracefully", () => {
     expect(() => {
       new OrderItem(productMap.get("mbp")!, -1); // Should throw an error for negative quantity
-    }).toThrow("You have passed an invalid quantity.");
+    }).toThrow("Quantity must be a non-negative number.");
   });
 
   test("should allow scanning multiple different items and calculate total correctly", () => {
